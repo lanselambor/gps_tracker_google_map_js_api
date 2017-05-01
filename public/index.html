@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+    <script type="text/javascript" src="convert.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+<h3>GPS Tracker</h3>
+<div id="map"></div>
+<script>
+
+    window.lng = 113.966678;  //113.966678,22.584322
+    window.lat = 22.584322;
+    var map;
+    var marker;
+    var lineCoords = [];
+
+    var socket = io.connect('127.0.0.1:3000');
+    socket.on('marker', function (data) {
+        console.log(data);
+        window.lat = parseFloat(data.lat);
+        window.lng = parseFloat(data.lng);
+        redraw(window.lat, window.lng);
+    });
+
+
+    function initialize() {
+        var GCJ02loc = new WGS84_to_GCJ02().transform( window.lat,  window.lng);
+        var uluru = {lat: GCJ02loc[0], lng: GCJ02loc[1]};  //22.584322, 113.966678,
+        lineCoords.push(uluru);
+
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: uluru
+        });
+        marker = new google.maps.Marker({
+            position: uluru,
+            map: map
+        });
+
+        console.log(lineCoords);
+    }
+
+    var redraw = function(lat, lng) {
+        var GCJ02loc = new WGS84_to_GCJ02().transform(lat, lng);
+        map.setCenter({lat: GCJ02loc[0], lng: GCJ02loc[1], alt:0});
+        marker.setPosition({lat: GCJ02loc[0], lng: GCJ02loc[1], alt:0});
+        var uluru = {lat: GCJ02loc[0], lng: GCJ02loc[1]};  //22.584322, 113.966678,
+        lineCoords.push(uluru);
+        var lineCoordinatesPath = new google.maps.Polyline({
+            path: lineCoords,
+            geodesic: true,
+            strokeColor: '#2E10FF'
+        });
+
+        lineCoordinatesPath.setMap(map);
+    };
+
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB59wPQqBXKecwgTR_121CMPCrXyVljUM8&callback=initialize">
+</script>
+</body>
+</html>
