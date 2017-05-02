@@ -21,5 +21,7 @@ io.sockets.on('connection', function (socket) {
         coor_lat += (Math.random() / 5000.0);
         coor_lng += (Math.random() / 5000.0);
         socket.broadcast.emit("marker",{'lat': coor_lat, 'lng': coor_lng});
+        var date = Date();
+        console.log("Emited new coordinate!" + " : " + date);
     }, 2000);
 });
