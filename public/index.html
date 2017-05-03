@@ -1,3 +1,7 @@
+<!--
+    Change line 27: var socket = io.connect('url:3001');
+    modified server address url to your own.
+-->
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,7 +25,7 @@
     var marker;
     var lineCoords = [];
 
-    var socket = io.connect('127.0.0.1:3000');
+    var socket = io.connect('ziladuo.com:3001');
     socket.on('marker', function (data) {
         console.log(data);
         window.lat = parseFloat(data.lat);
@@ -33,14 +37,15 @@
     function initialize() {
         var GCJ02loc = new WGS84_to_GCJ02().transform( window.lat,  window.lng);
         var uluru = {lat: GCJ02loc[0], lng: GCJ02loc[1]};  //22.584322, 113.966678,
-        lineCoords.push(uluru);
+        // lineCoords.push(uluru);
 
         map = new google.maps.Map(document.getElementById('map'), {
             zoom: 15,
             center: uluru
         });
         marker = new google.maps.Marker({
-            position: uluru,
+            // position: uluru,
+            position: null,
             map: map
         });
 
