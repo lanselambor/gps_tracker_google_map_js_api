@@ -56,6 +56,7 @@ var router = express.Router();              // get an instance of the express Ro
 // ----------------------------------------------------
 router.route('/latlng');
 
+var new_messsage = 0;
 // Deal with POST event
 router.route('/latlng/:data').post(function(req, res) {
         var str = req.params.data.toString();
@@ -69,6 +70,7 @@ router.route('/latlng/:data').post(function(req, res) {
         console.log("lng: " + window_lng.toString());
         // res.json({message: 'Return: ' + window_lat + ", " +window_lng});
         res.send(date + ":\r\n" + window_lat + ", " +window_lng + "\r\nOK\r\n");
+        new_messsage = 1;
 });
 
 
@@ -87,15 +89,15 @@ var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket) {
         console.log("A new user connected!");
         setInterval(function(){
-                // if(window_lat_old != window_lat || window_lng_old != window_lng){
-                // if(0 != window_lat && 0 != window_lng){
+                if(new_messsage == 1){
+                        new_messsage = 0;
                         socket.broadcast.emit("marker",{'lat': window_lat, 'lng': window_lng});
                         var date = new Date();
                         console.log("Emited new coordinate!" + " : " + date);
-                // }
-                window_lat_old = window_lat;
-                window_lng_old = window_lng;
-        }, 5000);
+                        window_lat_old = window_lat;
+                        window_lng_old = window_lng;
+                }
+        }, 500);
 });
 
 console.log('Service on port ' + port);
