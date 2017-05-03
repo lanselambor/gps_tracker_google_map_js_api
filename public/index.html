@@ -1,6 +1,7 @@
 <!--
-    Change line 27: var socket = io.connect('url:3001');
-    modified server address url to your own.
+    User definition parts;
+    1.var socket = io.connect('url:3001');
+    2.https://maps.googleapis.com/maps/api/js?key=YOUR_KEY&callback=initialize
 -->
 <!DOCTYPE html>
 <html>
@@ -21,16 +22,24 @@
 
     window.lng = 113.966678;  //113.966678,22.584322
     window.lat = 22.584322;
+    window.lng_old = 113.966678;  //113.966678,22.584322
+    window.lat_old = 22.584322;
     var map;
     var marker;
     var lineCoords = [];
 
-    var socket = io.connect('ziladuo.com:3001');
+    var socket = io.connect('url:port');  // User definition
     socket.on('marker', function (data) {
         console.log(data);
         window.lat = parseFloat(data.lat);
         window.lng = parseFloat(data.lng);
-        redraw(window.lat, window.lng);
+        if(window.lat_old != window.lat || window.lng_old != window.lng){
+        	if(0 != window.lat && 0 != window.lng){
+		        redraw(window.lat, window.lng);
+		}
+	}
+        window.lng_old = window.lng;
+        window.lat_old = window.lat;
     });
 
 
@@ -69,7 +78,7 @@
 
 </script>
 <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=key&callback=initialize">
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY&callback=initialize">
 </script>
 </body>
 </html>

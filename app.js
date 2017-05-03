@@ -87,14 +87,15 @@ var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket) {
         console.log("A new user connected!");
         setInterval(function(){
-                if(window_lat_old != window_lat || window_lng_old != window_lng){
+                // if(window_lat_old != window_lat || window_lng_old != window_lng){
+                // if(0 != window_lat && 0 != window_lng){
                         socket.broadcast.emit("marker",{'lat': window_lat, 'lng': window_lng});
                         var date = new Date();
                         console.log("Emited new coordinate!" + " : " + date);
-                }
+                // }
                 window_lat_old = window_lat;
                 window_lng_old = window_lng;
-        }, 2000);
+        }, 5000);
 });
 
-console.log('Magic happens on port ' + port);
+console.log('Service on port ' + port);
