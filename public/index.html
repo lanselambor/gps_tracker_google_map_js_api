@@ -8,9 +8,6 @@
 <head>
     <style>
         #map {
-            /*float: left;*/
-            margin-top: 20px;
-            margin-bottom: -0px;
             height: 100%;
         }
         /* Optional: Makes the sample page fill the window. */
@@ -19,13 +16,11 @@
             margin: 0;
             padding: 0;
         }
-        h3{
-            width: 100%;
-            height: 10px;
-        }
         #receiveCounter{
             width: 100%;
-            height: 10px;
+            text-align:right;
+            position: absolute;
+            z-index: 1;
         }
     </style>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -33,7 +28,6 @@
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-<h3>GPS Tracker</h3>
 <div id="receiveCounter" style="color: #0aa;">receiveCounter:</div>
 <div id="map"></div>
 <script>
