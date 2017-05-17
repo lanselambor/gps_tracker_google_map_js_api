@@ -8,15 +8,33 @@
 <head>
     <style>
         #map {
-            height: 600px;
+            /*float: left;*/
+            margin-top: 20px;
+            margin-bottom: -0px;
+            height: 100%;
+        }
+        /* Optional: Makes the sample page fill the window. */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        h3{
             width: 100%;
+            height: 10px;
+        }
+        #receiveCounter{
+            width: 100%;
+            height: 10px;
         }
     </style>
-    <script type="text/javascript" src="convert.js"></script>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <!-- <script type="text/javascript" src="convert.js"></script> -->
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
 <h3>GPS Tracker</h3>
+<div id="receiveCounter" style="color: #0aa;">receiveCounter:</div>
 <div id="map"></div>
 <script>
 
@@ -27,25 +45,49 @@
     var map;
     var marker;
     var lineCoords = [];
+    var receiveCnt = 0;
 
-    var socket = io.connect('url:port');  // User definition
+    var socket = io.connect('ziladuo.com:3001');
+    var doc_receiveCnt = document.getElementById("receiveCounter");
+    doc_receiveCnt.innerHTML = "receiveCounter: " + 0;
+
+
     socket.on('marker', function (data) {
         console.log(data);
-        window.lat = parseFloat(data.lat);
-        window.lng = parseFloat(data.lng);
+        if(data.we == "W"){
+            window.lat = 0 - parseFloat(data.lat);
+        } else {
+            window.lat = parseFloat(data.lat);
+        }
+
+        if(data.ns == "S"){
+            window.lng = 0 - parseFloat(data.lng);
+        } else {
+            window.lng = parseFloat(data.lng);
+        }
+        
+        // window.lat = parseFloat(window.lat);
+        // window.lng = parseFloat(window.lng);
         if(window.lat_old != window.lat || window.lng_old != window.lng){
         	if(0 != window.lat && 0 != window.lng){
 		        redraw(window.lat, window.lng);
-		}
-	}
+		    }
+	    }
+
         window.lng_old = window.lng;
         window.lat_old = window.lat;
+
+        receiveCnt++;
+        doc_receiveCnt = document.getElementById("receiveCounter");
+        doc_receiveCnt.innerHTML = "receiveCounter: " + receiveCnt;
+
     });
 
 
     function initialize() {
-        var GCJ02loc = new WGS84_to_GCJ02().transform( window.lat,  window.lng);
-        var uluru = {lat: GCJ02loc[0], lng: GCJ02loc[1]};  //22.584322, 113.966678,
+        // var GCJ02loc = new WGS84_to_GCJ02().transform( window.lat,  window.lng);
+        // var uluru = {lat: GCJ02loc[0], lng: GCJ02loc[1]};  //22.584322, 113.966678,
+        var uluru = {lat: window.lat, lng: window.lng};  //22.584322, 113.966678,
         // lineCoords.push(uluru);
 
         map = new google.maps.Map(document.getElementById('map'), {
@@ -62,10 +104,10 @@
     }
 
     var redraw = function(lat, lng) {
-        var GCJ02loc = new WGS84_to_GCJ02().transform(lat, lng);
-        map.setCenter({lat: GCJ02loc[0], lng: GCJ02loc[1], alt:0});
-        marker.setPosition({lat: GCJ02loc[0], lng: GCJ02loc[1], alt:0});
-        var uluru = {lat: GCJ02loc[0], lng: GCJ02loc[1]};  //22.584322, 113.966678,
+        // var GCJ02loc = new WGS84_to_GCJ02().transform(lat, lng);
+        map.setCenter({lat: lat, lng: lng, alt:0});
+        marker.setPosition({lat: lat, lng: lng, alt:0});
+        var uluru = {lat: lat, lng: lng};  //22.584322, 113.966678,
         lineCoords.push(uluru);
         var lineCoordinatesPath = new google.maps.Polyline({
             path: lineCoords,
@@ -78,7 +120,7 @@
 
 </script>
 <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY&callback=initialize">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB59wPQqBXKecwgTR_121CMPCrXyVljUM8&callback=initialize">
 </script>
 </body>
 </html>

@@ -17,6 +17,8 @@ var bodyParser = require('body-parser');
 var path = require('path');
 
 // global variable
+var window_NS = "";
+var window_WE = "";
 var window_lat = 0.0;
 var window_lng = 0.0;
 var window_lat_old = 0.0;
@@ -58,18 +60,21 @@ router.route('/latlng');
 
 var new_messsage = 0;
 // Deal with POST event
-router.route('/latlng/:data').post(function(req, res) {
+router.route('/latlng/:data').post(function(req, res) {  // POST /api/latlng/N&225837666&E&1139667733/ HTTP/1.0
         var str = req.params.data.toString();
         console.log(str);
         var latlng = str.split("&");
-        window_lat = Number(latlng[0])/10000000;
-        window_lng = Number(latlng[1])/10000000;
+        window_NS = latlng[0];
+        window_lat = Number(latlng[1])/10000000;
+        window_WE = latlng[2];
+        window_lng = Number(latlng[3])/10000000;
+        
         var date = new Date();
         console.log(date + ": ");
-        console.log("lat: " + window_lat.toString());
-        console.log("lng: " + window_lng.toString());
+        console.log("lat: " + window_NS + window_lat.toString());
+        console.log("lng: " + window_WE + window_lng.toString());
         // res.json({message: 'Return: ' + window_lat + ", " +window_lng});
-        res.send(date + ":\r\n" + window_lat + ", " +window_lng + "\r\nOK\r\n");
+        res.send(date + ":\r\n" + window_NS + window_lat + ", " + window_WE + window_lng + "\r\nOK\r\n");
         new_messsage = 1;
 });
 
@@ -91,9 +96,9 @@ io.sockets.on('connection', function (socket) {
         setInterval(function(){
                 if(new_messsage == 1){
                         new_messsage = 0;
-                        socket.broadcast.emit("marker",{'lat': window_lat, 'lng': window_lng});
+                        socket.broadcast.emit("marker",{'ns': window_NS, 'lat': window_lat, 'we': window_WE, 'lng': window_lng});
                         var date = new Date();
-                        console.log("Emited new coordinate!" + " : " + date);
+                        console.log("Emited new coordinate!" + " : " + date);        
                         window_lat_old = window_lat;
                         window_lng_old = window_lng;
                 }
